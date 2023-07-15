@@ -1,8 +1,11 @@
 package com.ruppyrup;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,11 +56,35 @@ public class EmojiTranslator implements Translator {
     }
 
     private static List<String> getStrings() {
-        try {
-            emojis = Files.readAllLines(Paths.get("src/main/resources/emoji.dict"));
+        List<String> symbolMap = new ArrayList<>();
+
+        try (InputStream emojiInputStream = getFileFromResourceAsStream("emoji.dict");
+        var streamReader = new InputStreamReader(emojiInputStream, StandardCharsets.UTF_8);
+             var reader = new BufferedReader(streamReader)){
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                symbolMap.add(line);
+            }
+
         } catch (IOException e) {
             System.out.println("Couldn't read emoji.dict :: " + e.getMessage());
         }
-        return emojis;
+        return symbolMap;
+    }
+
+    private static InputStream getFileFromResourceAsStream(String fileName) {
+
+        // The class loader that loaded the class
+        ClassLoader classLoader = EmojiTranslator.class.getClassLoader();
+        InputStream inputStream = classLoader.getResourceAsStream(fileName);
+
+        // the stream holding the file content
+        if (inputStream == null) {
+            throw new IllegalArgumentException("file not found! " + fileName);
+        } else {
+            return inputStream;
+        }
+
     }
 }

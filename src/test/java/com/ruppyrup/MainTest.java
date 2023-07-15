@@ -1,10 +1,9 @@
 package com.ruppyrup;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MainTest {
 
@@ -23,14 +22,14 @@ class MainTest {
     void canEncodeInput() {
         Message message = new Message(decodedString);
         String encode = message.encode(translator);
-        Assertions.assertEquals(encodedString, encode);
+        assertEquals(encodedString, encode);
     }
 
     @Test
     void canDecodeInput() {
         Message encodedMessage = new Message(encodedString);
         String decode = encodedMessage.decode(translator);
-        Assertions.assertEquals(decodedString, decode);
+        assertEquals(decodedString, decode);
     }
 
 }

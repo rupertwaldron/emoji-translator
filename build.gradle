@@ -1,6 +1,7 @@
 plugins {
-    id 'java'
+    id 'application'
     id 'com.dorongold.task-tree' version "2.1.1"
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'jacoco'
 }
 
@@ -13,15 +14,37 @@ repositories {
 }
 
 
+application {
+    mainClass = 'com.ruppyrup.Main'
+}
+
+tasks.register('runWithArg', JavaExec) {
+    mainClass = 'com.ruppyrup.Main'
+    classpath = sourceSets.main.runtimeClasspath
+    args 'hello world'
+}
+
+tasks.register('runJar', JavaExec) {
+    classpath jar.outputs
+    classpath sourceSets.main.runtimeClasspath // addes libraries to jar
+    mainClass = 'com.ruppyrup.Main'
+    args 'uncle bob'
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
+ext {
+    junitJupiterVersion = '5.9.1'
+}
+
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
+    implementation 'com.vdurmont:emoji-java:5.1.1'
+    testImplementation platform("org.junit:junit-bom:${junitJupiterVersion}")
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
@@ -31,7 +54,7 @@ test {
 
 jacoco {
     toolVersion = "0.8.9"
-    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+//    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 
 jacocoTestReport {
@@ -43,10 +66,22 @@ jacocoTestReport {
 }
 
 jar {
+    onlyIf {
+        !tasks.named('shadowJar').isPresent() // only want the one jar if using shadowJar
+    }
     manifest {
         attributes["Main-Class"] = "com.ruppyrup.Main"
     }
 }
+
+shadowJar {
+    archivesBaseName = 'gradleDemo1'
+    archiveVersion = '1.0-SNAPSHOT'
+    manifest {
+        attributes 'Main-Class': 'com.ruppyrup.Main'
+    }
+}
+
 
 
 test.finalizedBy jacocoTestReport

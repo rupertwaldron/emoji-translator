@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class EmojiTranslator implements Translator {
 
 
-    private static List<String> emojis = getStrings();
+    private static final List<String> emojis = getStrings();
     private static final Map<String, String> encodedDict = fetchEncodeDictionary();
     private static final Map<String, String> decodeDict = fetchDecodeDictionary();
 

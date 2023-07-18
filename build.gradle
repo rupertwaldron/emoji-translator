@@ -3,6 +3,7 @@ plugins {
     id 'com.dorongold.task-tree' version "2.1.1"
     id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'jacoco'
+    id 'maven-publish'
 }
 
 group = 'com.ruppyrup'
@@ -19,6 +20,9 @@ application {
 }
 
 tasks.register('runWithArg', JavaExec) {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(20)
+    }
     mainClass = 'com.ruppyrup.Main'
     classpath = sourceSets.main.runtimeClasspath
     args 'hello world'
@@ -103,8 +107,8 @@ jar {
 }
 
 shadowJar {
-    archivesBaseName = 'gradleDemo1'
-    archiveVersion = '1.0-SNAPSHOT'
+//    archivesBaseName = 'gradleDemo1'
+    archiveVersion = version
     manifest {
         attributes 'Main-Class': 'com.ruppyrup.Main'
     }
@@ -117,3 +121,14 @@ wrapper {
     gradleVersion '8.1.1'
     setDistributionType Wrapper.DistributionType.ALL
 }
+
+publishing {
+    publications {
+        myDistribution(MavenPublication) {
+//            artifact 'build/libs/gradleDemo1-1.0-SNAPSHOT-all.jar'
+            artifact shadowJar.archiveFile
+        }
+    }
+}
+
+build.finalizedBy('publishToMavenLocal')

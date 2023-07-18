@@ -25,8 +25,9 @@ tasks.register('runWithArg', JavaExec) {
 }
 
 tasks.register('runJar', JavaExec) {
-    classpath jar.outputs
-    classpath sourceSets.main.runtimeClasspath // addes libraries to jar
+    classpath shadowJar.outputs
+//    classpath jar.outputs
+//    classpath sourceSets.main.runtimeClasspath // addes libraries to jar
     mainClass = 'com.ruppyrup.Main'
     args 'uncle bob'
 }
@@ -43,7 +44,7 @@ ext {
 
 
 dependencies {
-    implementation 'com.vdurmont:emoji-java:5.1.1'
+    implementation 'net.fellbaum:jemoji:1.1.5'
     testImplementation platform("org.junit:junit-bom:${junitJupiterVersion}")
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }

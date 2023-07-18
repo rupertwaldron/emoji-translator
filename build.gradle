@@ -49,9 +49,36 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
-test {
+tasks.withType(Test).configureEach {
     useJUnitPlatform()
 }
+
+sourceSets {
+    integrationTest {
+        java {
+            srcDir "$projectDir/src/integrationTest/java"
+        }
+        resources {
+            srcDir "$projectDir/src/integrationTest/resources"
+        }
+
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+tasks.register('integrationTest', Test) {
+    group 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+}
+
+check.dependsOn integrationTest
 
 jacoco {
     toolVersion = "0.8.9"
@@ -82,7 +109,6 @@ shadowJar {
         attributes 'Main-Class': 'com.ruppyrup.Main'
     }
 }
-
 
 
 test.finalizedBy jacocoTestReport

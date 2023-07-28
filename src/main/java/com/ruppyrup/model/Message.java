@@ -1,6 +1,7 @@
-package com.ruppyrup;
+package com.ruppyrup.model;
 
 
+import com.ruppyrup.translator.Translator;
 
 public class Message {
 

@@ -1,5 +1,7 @@
 package com.ruppyrup;
 
+import com.ruppyrup.translator.EmojiTranslator;
+import com.ruppyrup.model.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

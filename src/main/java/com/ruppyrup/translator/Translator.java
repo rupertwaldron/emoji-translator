@@ -1,4 +1,4 @@
-package com.ruppyrup;
+package com.ruppyrup.translator;
 
 public interface Translator {
     String decode(String input);

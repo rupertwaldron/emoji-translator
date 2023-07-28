@@ -20,7 +20,7 @@ repositories {
 
 
 application {
-    mainClass = 'com.ruppyrup.Main'
+    mainClass = 'com.ruppyrup.Application'
 }
 
 tasks.register('runWithArg', JavaExec) {
@@ -78,10 +78,18 @@ tasks.register('integrationTest', Test) {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
     implementation 'net.fellbaum:jemoji:1.1.5'
     testImplementation platform("org.junit:junit-bom:${junitJupiterVersion}")
     testImplementation 'org.junit.jupiter:junit-jupiter'
     integrationTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    modules {
+        module('org.springframework.boot:spring-boot-starter-logging') {
+            replacedBy 'org.springframework.boot:spring-boot-starter-log4j2', 'Use log4j instead of logback'
+        }
+    }
+
 }
 
 tasks.withType(Test).configureEach {
@@ -146,7 +154,9 @@ shadowJar {
 }
 
 
-test.finalizedBy jacocoTestReport
+tasks.withType(Test).configureEach {
+    finalizedBy jacocoTestReport
+}
 
 wrapper {
     gradleVersion '8.1.1'

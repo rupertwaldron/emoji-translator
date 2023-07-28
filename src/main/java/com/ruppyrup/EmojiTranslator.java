@@ -59,8 +59,8 @@ public class EmojiTranslator implements Translator {
         List<String> symbolMap = new ArrayList<>();
 
         try (InputStream emojiInputStream = getFileFromResourceAsStream("emoji.dict");
-        var streamReader = new InputStreamReader(emojiInputStream, StandardCharsets.UTF_8);
-             var reader = new BufferedReader(streamReader)){
+             var streamReader = new InputStreamReader(emojiInputStream, StandardCharsets.UTF_8);
+             var reader = new BufferedReader(streamReader)) {
 
             String line;
             while ((line = reader.readLine()) != null) {

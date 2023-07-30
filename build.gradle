@@ -96,25 +96,6 @@ tasks.withType(Test).configureEach {
     useJUnitPlatform()
 }
 
-sourceSets {
-    integrationTest {
-        java {
-            srcDir "$projectDir/src/integrationTest/java"
-        }
-        resources {
-            srcDir "$projectDir/src/integrationTest/resources"
-        }
-
-        compileClasspath += main.output + test.output
-        runtimeClasspath += main.output + test.output
-    }
-}
-
-configurations {
-    integrationTestImplementation.extendsFrom testImplementation
-    integrationTestRuntime.extendsFrom testRuntime
-}
-
 integrationTest {
     group 'verification'
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
@@ -134,6 +115,8 @@ jacocoTestReport {
         csv.required = false
         html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
     }
+
+    getExecutionData().setFrom(fileTree(buildDir).include("/jacoco/*.exec")) // to include the integration tests
 }
 
 jar {
@@ -168,6 +151,18 @@ publishing {
         myDistribution(MavenPublication) {
 //            artifact 'build/libs/gradleDemo1-1.0-SNAPSHOT-all.jar'
             artifact shadowJar.archiveFile
+        }
+    }
+}
+
+bootBuildImage { // modifies the imageName property
+    dependsOn(build)
+    imageName = '226241359626.dkr.ecr.eu-west-2.amazonaws.com/ruppyrup-images:latest'
+    publish = true
+    docker {
+        publishRegistry {
+            username = 'AWS'
+            password = System.getenv('DOCKER_PASSWORD')
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.ruppyrup.translator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -15,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class EmojiTranslator implements Translator {
-
+    private static final Logger logger = LogManager.getLogger(EmojiTranslator.class);
 
     private static final List<String> emojis = getStrings();
     private static final Map<String, String> encodedDict = fetchEncodeDictionary();
@@ -29,7 +31,7 @@ public class EmojiTranslator implements Translator {
         for (int i = 0; i < input.length() / 2; i++) {
             String string = new StringBuilder().appendCodePoint(
                     input.codePointAt(input.offsetByCodePoints(0, i))).toString();
-
+            logger.debug("Appending value :: " + string);
             sb.append(decodeDict.get(string));
         }
         return sb.toString();
@@ -40,6 +42,7 @@ public class EmojiTranslator implements Translator {
         StringBuilder sb = new StringBuilder();
 
         for (char c : input.toLowerCase().toCharArray()) {
+            logger.debug("Replacing value :: " + c);
             sb.append(encodedDict.getOrDefault(String.valueOf(c), "😇"));
         }
         return sb.toString();

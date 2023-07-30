@@ -31,14 +31,14 @@ public class EmojiController {
     @GetMapping("/encode/{text}")
     public String encode(@PathVariable String text) {
         Message message = new Message(text);
-        logger.info("Encoding message: " + text);
+        logger.info("Encoding message :: " + text);
         return message.encode(emojiTranslator);
     }
 
     @GetMapping("/decode/{emojis}")
     public String decode(@PathVariable String emojis) {
         Message message = new Message(emojis);
-        logger.info("Decoding message: " + emojis);
+        logger.info("Decoding message :: " + emojis);
         return message.decode(emojiTranslator);
     }
 

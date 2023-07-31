@@ -41,5 +41,4 @@ public class EmojiController {
         logger.info("Decoding message :: " + emojis);
         return message.decode(emojiTranslator);
     }
-
 }

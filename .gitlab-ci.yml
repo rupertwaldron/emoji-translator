@@ -26,7 +26,7 @@ test:
     - ./gradlew test
   artifacts:
     paths:
-      - build/reports/test/*
+      - build/reports/test/*.html
     expire_in: 1 week
 
 integration-test:
@@ -35,7 +35,7 @@ integration-test:
     - ./gradlew integrationTest
   artifacts:
     paths:
-      - build/reports/integrationTest/*
+      - build/reports/integrationTest/*.html
     expire_in: 1 week
 
 #build-image:

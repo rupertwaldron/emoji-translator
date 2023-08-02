@@ -1,4 +1,4 @@
-image: openjdk:17-stretch
+image: amazoncorretto:17.0.7-alpine
 
 stages:
   - build

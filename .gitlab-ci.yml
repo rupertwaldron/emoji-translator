@@ -1,0 +1,81 @@
+image: openjdk:17-stretch
+
+stages:
+  - build
+  - test
+  - integrationTest
+ # - package
+ # - deploy-aws
+
+before_script:
+  - echo "Start CI/CD"
+  - IMAGE_TAG="$(echo $CI_COMMIT_SHA | head -c 8)"
+
+build:
+  stage: build
+  script:
+    - ./gradlew assemble
+  artifacts:
+    paths:
+      - build/libs/*.jar
+    expire_in: 1 week
+
+test:
+  stage: test
+  script:
+    - ./gradlew test
+  artifacts:
+    paths:
+      - build/reports/test/*
+    expire_in: 1 week
+
+integration-test:
+  stage: integrationTest
+  script:
+    - ./gradlew integrationTest
+  artifacts:
+    paths:
+      - build/reports/integrationTest/*
+    expire_in: 1 week
+
+build-image:
+  stage: package
+#  only:
+#    - production
+  image: docker:latest
+  services:
+    - name: docker:dind
+  script:
+    - apk add --no-cache curl jq python3 py-pip
+    - pip install awscli
+    - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+    - docker build -t $REPOSITORY_URL:latest .
+    - docker tag $REPOSITORY_URL:latest $REPOSITORY_URL:$IMAGE_TAG
+    - docker push $REPOSITORY_URL:latest
+    - docker push $REPOSITORY_URL:$IMAGE_TAG
+
+# the deploy job
+deploy_aws:
+  stage: deploy_aws
+  image: ubuntu:latest
+  before_script: # prepare the pipeline runner for deploy by installing ssh
+    - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+    - eval $(ssh-agent -s)
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - apt-get update -y
+    - apt-get -y install rsync
+  script:
+    - chmod 400 $SECRET_KEY
+    # clean up the ec32 instance
+    - ssh -i $SECRET_KEY $USER_NAME@$SERVER_IP rm -rf /home/ec2-user/rest-app-1.jar
+    # copy files to the ec2 instance
+    - scp -i $SECRET_KEY -r target/rest-app-1.jar $USER_NAME@$SERVER_IP:/home/ec2-user
+
+    # run the app
+    - ssh -i $SECRET_KEY $USER_NAME@$SERVER_IP 'sudo systemctl restart my_rest_app.service'
+
+
+after_script:
+  - echo "End CI/CD"
